@@ -1,0 +1,179 @@
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+<html>
+    <body>
+        <script>
+            window.data = "<%= streamers %>";
+        </script>
+
+        <div class = "menu-bar">
+        <a  href = "/" class = "btn btn-outline-dark menu-button">Home</a>
+        <a  href = "stats" class = "btn btn-outline-dark menu-button">Stats</a>
+        </div>
+
+        <form action = 'ranking' method = 'POST'>
+            <div>
+                <input class = "form-control col-sm-2" type = 'text' placeholder = 'Channel Name' name = 'channel' required>
+            </div>
+            <div>
+                <input class = "form-control col-sm-2" type = 'number' min = "0" placeholder = 'Watch Time (In Minutes)' name = 'watch_time'>
+            </div>
+            <div>
+                <input class = "form-control col-sm-2" type = 'number' min = "0" placeholder = 'Stream Time (In Minutes)' name = 'stream_time'>
+            </div>
+            <div>
+                <input class = "form-control col-sm-2" type = 'number' min = "0" placeholder = 'Peak Viewers' name = 'peak_viewers'>
+            </div>
+            <div>
+                <input class = "form-control col-sm-2" type = 'number' min = "0" placeholder = 'Average Viewers' name = 'avg_viewers'>
+            </div>
+            <div>
+                <input class = "form-control col-sm-2" type = 'number' min= "0" placeholder = 'Followers'  name = 'followers'>
+            </div>
+            <div>
+                <input class = "form-control col-sm-2" type = 'number'  placeholder = 'Followers Gained (12 Months)'  name = 'followers_gained'>
+            </div>
+            <div>
+                <input class = "form-control col-sm-2" type = 'number'  placeholder = 'Views Gained'  name = 'views_gained'>
+            </div>
+            <div>
+                Partnered
+                <input class = "form-control col-sm-2" type = 'checkbox' placeholder = 'Partnered' name = 'partnered'>
+            </div>
+            <div>
+                Mature Content
+                <input class = "form-control col-sm-2" type = 'checkbox' placeholder = 'Mature Content' name = 'mature'>
+            </div>
+            <div>
+                <input class = "form-control col-sm-2" type = 'text' placeholder = 'Stream Language' name = 'language'>
+            </div>
+            <input class = "btn btn-secondary" type = 'submit' value = "Add"/>
+        </form>
+
+        <form action = "" method = "GET">
+            <div>
+                <input class = "form-control col-sm-2" type = 'text' placeholder = 'Channel Name' name = 'channel' required>
+            </div>
+            <input class = "btn btn-secondary" type = 'submit' value = "Search"/>
+        </form>
+
+        <div id = "postCotainer" class = "col-sm-8 mx-auto">
+            <table class = "table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Channel</th>
+                        <th scope="col">Watch Time (In Minutes)</th>
+                        <th scope="col">Stream Time (In Minutes)</th>
+                        <th scope="col">Peak Viewers</th>
+                        <th scope="col">Average Viewers</th>
+                        <th scope="col">Followers</th>
+                        <th scope="col">Followers Gained (12 Months)</th>
+                        <th scope="col">Views Gained (12 Months)</th>
+                        <th scope="col">Partnered</th>
+                        <th scope="col">Mature</th>
+                        <th scope="col">Language</th>
+                    </tr>
+                </thead>
+            <tbody>
+                <% streamers.forEach( function(streamer, index){ %>
+                    <tr>
+                            <td><%= streamer.channel %></td>
+                            <td><%= streamer.watch_time %></td>
+                            <td><%= streamer.stream_time %></td>
+                            <td><%= streamer.peak_viewers %></td>
+                            <td><%= streamer.avg_viewers %></td>
+                            <td><%= streamer.followers %></td>
+                            <td><%= streamer.followers_gained %></td>
+                            <td><%= streamer.views_gained %></td>
+                            <td><%= streamer.partnered %></td>
+                            <td><%= streamer.mature %></td>
+                            <td><%= streamer.language %></td>
+                            <td>
+                                <div class = "col-sm-2" style = "float:left">
+                                <button class = "btn btn-outline-secondary" data-toggle = "modal" data-target = "#editModal" type = "button" onclick="showEditBox('<%= JSON.stringify(streamer) %>')">Edit</button>
+                                </div>
+                            </td>
+                            <td>
+                                <a class = "btn btn-outline-warning" href="/ranking/delete/<%=streamer.id%>" role = "button">Delete</a>
+                            </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+            </table>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit channel data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <form action = "ranking/update" method = "POST">
+                        <input hidden id = "id">
+                        <div class="form-group">
+                          <label for="channel" class="col-form-label">Channel:</label>
+                          <input type="text" class="form-control" id="channel">
+                        </div>
+                        <div class="form-group">
+                          <label for="watch_time" class="col-form-label">Watch Time (In Minutes):</label>
+                          <input type="number" class="form-control" min = "0" id="watch_time">
+                        </div>
+                        <div class="form-group">
+                            <label for="stream_time" class="col-form-label">Stream Time (In Minutes):</label>
+                            <input type="number" class="form-control" min = "0" id="stream_time">
+                        </div>
+                        <div class="form-group">
+                            <label for="peak_viewers" class="col-form-label">Peak Viewers:</label>
+                            <input type="number" class="form-control" min = "0" id="peak_viewers">
+                        </div>
+                        <div class="form-group">
+                            <label for="avg_viewers" class="col-form-label">Average Viewers:</label>
+                            <input type="number" class="form-control" min = "0" id="avg_viewers">
+                        </div>
+                        <div class="form-group">
+                            <label for="followers" class="col-form-label">Followers:</label>
+                            <input type="number" class="form-control" min = "0" id="followers">
+                        </div>
+                        <div class="form-group">
+                            <label for="views_gained" class="col-form-label">Followers Gained (12 Months):</label>
+                            <input type="number" class="form-control" id="followers_gained">
+                        </div>
+                        <div class="form-group">
+                            <label for="followers_gained" class="col-form-label">Views Gained (12 Months):</label>
+                            <input type="number" class="form-control" id="views_gained">
+                        </div>
+                        <div class="form-group">
+                            <label for="partnered" class="col-form-label">Partnered:</label>
+                            <input type="checkbox" class="form-control" id="partnered">
+                        </div>
+                        <div class="form-group">
+                            <label for="mature" class="col-form-label">Mature:</label>
+                            <input type="checkbox" class="form-control" id="mature">
+                        </div>
+                        <div class="form-group">
+                            <label for="language" class="col-form-label">Language:</label>
+                            <input type="text" class="form-control" id="language">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-primary" value = "Save Changes"/>
+                        </div>
+                      </form>
+                </div>
+            </div>
+            </div>
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    </body>
+</html>
